@@ -8,7 +8,9 @@ const initialColor = {
 const ColorList = ({ colors, updateColors,storage }) => {
   const [editing, setEditing] = useState(false);
   const [colorToEdit, setColorToEdit] = useState(initialColor);
-const key = storage;
+  const [colorName,setColorName] = useState('')
+  const [colorCode, setColorCode] = useState("");
+  const key = storage;
 const header = {
   headers: { authorization: key }
 };
@@ -17,9 +19,9 @@ const header = {
     setColorToEdit(color);
   };
 
-  const saveEdit = e => {
+  const saveEdit = async e => {
     e.preventDefault();
-    axios.put(`http://localhost:5000/api/colors/${colorToEdit.id}`,colorToEdit,header);
+    await axios.put(`http://localhost:5000/api/colors/${colorToEdit.id}`,colorToEdit,header);
     updateColors()
     setEditing(false)
   };
@@ -29,6 +31,17 @@ const header = {
     updateColors()
   };
 
+  const newColor = async e => {
+    e.preventDefault();
+    const myColor = {
+      color:colorName,
+      code:{hex:colorCode}
+    }
+    await axios.post("http://localhost:5000/api/colors/",myColor,header);
+    setColorCode('')
+    setColorName('')
+    updateColors()
+  }
   return (
     <div className="colors-wrap">
       <p>colors</p>
@@ -36,12 +49,14 @@ const header = {
         {colors.map(color => (
           <li key={color.color} onClick={() => editColor(color)}>
             <span>
-              <span className="delete" onClick={e => {
-                    e.stopPropagation();
-                    deleteColor(color)
-                  }
-                }>
-                  x
+              <span
+                className="delete"
+                onClick={e => {
+                  e.stopPropagation();
+                  deleteColor(color);
+                }}
+              >
+                x
               </span>{" "}
               {color.color}
             </span>
@@ -82,8 +97,24 @@ const header = {
           </div>
         </form>
       )}
-      <div className="spacer" />
-      {/* stretch - build another form here to add a color */}
+      <div />
+      <form onSubmit={newColor} style={{justifyItems:'center'}}>
+        <input
+          placeholder="Enter Color Name"
+          value={colorName}
+          onChange={here => setColorName(here.target.value)}
+          required
+          style={{ width: "75%"}}
+        />
+        <input
+          placeholder="Enter Color Code"
+          value={colorCode}
+          onChange={here => setColorCode(here.target.value)}
+          style={{ width: "75%"}}
+          required
+        />
+        <input type="submit" value="Add" />
+      </form>
     </div>
   );
 };
