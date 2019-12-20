@@ -10,7 +10,8 @@ const Login = props => {
     };
     const res = await axios.post('http://localhost:5000/api/login',{...cred})
     const key = res.data.payload
-    window.localStorage.setItem("key",key)
+    await window.localStorage.setItem("key",key)
+    await props.setStorage(window.localStorage.getItem("key", key));
     props.history.push('/bubbles')
   }
   return (
