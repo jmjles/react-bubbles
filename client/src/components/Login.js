@@ -1,12 +1,35 @@
-import React from "react";
+import React,{useState} from "react";
 
-const Login = () => {
-  // make a post request to retrieve a token from the api
-  // when you have handled the token, navigate to the BubblePage route
+const axios = require('axios')
+const Login = props => {
+  const getCredintials = async e => {
+    e.preventDefault()
+    const cred = {
+      username: "Lambda School",
+      password: "i<3Lambd4"
+    };
+    const res = await axios.post('http://localhost:5000/api/login',{...cred})
+    const key = res.data.payload
+    window.localStorage.setItem("key",key)
+    props.history.push('/bubbles')
+  }
   return (
     <>
-      <h1>Welcome to the Bubble App!</h1>
-      <p>Build a login page here</p>
+      <form onSubmit={getCredintials}>
+        <input
+          type="text"
+          placeholder="Enter Username"
+          name="username"
+          required
+        />
+        <input
+          type="password"
+          placeholder="Enter Password"
+          name="password"
+          required
+        />
+        <input type="submit" value='Submit' required />
+      </form>
     </>
   );
 };
